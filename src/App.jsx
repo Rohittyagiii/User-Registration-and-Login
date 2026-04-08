@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Register from "./pages/Register";
+// import Profile  from "./pages/Profile"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -7,6 +8,7 @@ function App() {
   return (
     <>
       <Register setUser={setUser} />
+      {/* <Profile/> */}
       
       {user && (
         <div>

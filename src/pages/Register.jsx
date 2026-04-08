@@ -1,81 +1,75 @@
 import React, { useState } from "react";
+import "./Register.css";
 
 function Register({ setUser }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    // age: ""
   });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-//  const handleSubmit = (e) => {
-//   console.log("my-data",form);
-//     e.preventDefault();
-//     setUser(form);
+    try {
+      const res = await fetch("http://localhost:5000/api/addusers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-//     setForm({
-//       name: "",
-//       email: "",
-//       // age: "",
-//     });
-//   };
+      const data = await res.json();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+      if (!res.ok) {
+        throw new Error(data.msg || "Failed to add user");
+      }
 
-  try {
-    const res = await fetch("http://localhost:5000/api/addusers", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+      setUser(data.user || form);
 
-    const data = await res.json();
-    console.log("My Api response",res,data);
-    if (!res.ok) {
-      throw new Error(data.msg || "Failed to add user");
+      setForm({
+        name: "",
+        email: "",
+      });
+    } catch (err) {
+      console.error("Error:", err.message);
     }
-
-    console.log("User added:", data);
-
-    // update UI (optional)
-    setUser(data.user || form);
-
-    // reset form
-    setForm({
-      name: "",
-      email: "",
-    });
-
-  } catch (err) {
-    console.error("Error:", err.message);
-  }
-};
+  };
 
   return (
-    <>
-     <div>
-      <h2>Registration</h2>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="">Name:</label>
-        <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
-        <br />
-        <label htmlFor="">Email:</label>
-        <input name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-        <br />
-        {/* <label htmlFor="">Age:</label>
-        <input name="age" placeholder="Age" value={form.age} onChange={handleChange} required />
-        <br /> */}
-        <button type="submit" >Register</button>
+    <div className="register-container">
+      <form className="register-card" onSubmit={handleSubmit}>
+        <h2>Registration</h2>
+
+        <div className="form-group">
+          <label>Name</label>
+          <input
+            name="name"
+            placeholder="Enter your name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            name="email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <button type="submit">Register</button>
       </form>
     </div>
-    </>
   );
 }
 
